@@ -1,19 +1,20 @@
 projet_m2_bi:
-  target: exploration-dev
+  target: dev
   outputs:
-    exploration-dev:
+    dev:
       type: bigquery
-      method: oauth
-      project: "decisive-plasma-473714-i8"
-      dataset: dev_projet_m2_mi_warehouse
+      method: service-account
+      project: "test-terraform-473818"
+      dataset: test_terraform_473818_dev
+      keyfile: ".secrets/sa_key.json"
       threads: 1
-      location: EU
+      location: europe-west9
 
     prod:
       type: bigquery
-      method: oauth
-      project: "decisive-plasma-473714-i8"
-      dataset: prod_projet_m2_mi_warehouse
+      method: service-account
+      project: "test-terraform-473818"
+      dataset: test_terraform_473818_prod
+      keyfile: ".secrets/sa_key.json"
       threads: 4
-      location: EU
-
+      location: europe-west9

@@ -14,7 +14,6 @@ variable "state_bucket" {
   type        = string
 }
 
-
 variable "bq_dev_dataset_id" {
   description = "BigQuery dataset ID for dev"
   type        = string
