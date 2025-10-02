@@ -1,6 +1,0 @@
-dbt-core==1.10.2
-dbt-bigquery==1.10.2
-prefect
-prefect-cloud
-prefect-gcp
-prefect-dbt
