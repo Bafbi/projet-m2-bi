@@ -18,3 +18,4 @@ projet_m2_bi:
       keyfile: "${sa_key_path}"
       threads: 4
       location: ${region}
+

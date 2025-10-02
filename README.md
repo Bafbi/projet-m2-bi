@@ -28,39 +28,38 @@ This is a project for M2 BI, featuring infrastructure as code using Terraform/Op
 3. **Configure variables:**
    - Copy the example variables file and edit it:
      ```bash
-     cp terraform.tfvars.example terraform.tfvars
+     cp infrastructure/terraform.tfvars.example infrastructure/terraform.tfvars
      ```
-   - Edit `terraform.tfvars` to set your project ID and other variables:
+   - Edit `infrastructure/terraform.tfvars` to set your project ID, state bucket name, dataset IDs, and service account settings.
 
-4. **Initialize Terraform/OpenTofu:**
+4. **Deploy the infrastructure:**
    ```bash
-   tofu init
-   ```
-   This will download providers and set up the GCS backend for state storage.
-
-5. **Plan the deployment:**
-   ```bash
+   cd infrastructure
+   tofu init -backend-config="bucket=<your-state-bucket>"
    tofu plan
-   ```
-   Review the plan to ensure it creates the expected resources.
-
-6. **Apply the infrastructure:**
-   ```bash
    tofu apply
    ```
+   Replace `<your-state-bucket>` with the same value configured in `terraform.tfvars`. The backend block already sets the prefix to `terraform/state`.
    Confirm the apply to create:
-   - GCS bucket for Terraform state
+   - GCS bucket for Terraform state (first run may require a local backend if the bucket does not yet exist)
    - BigQuery datasets (dev and prod)
    - Service account with necessary IAM roles
-   - dbt profiles.yml file
 
-7. **Create and place the service account key (if using service account auth):**
+5. **Export Terraform outputs and generate the dbt profile:**
+   ```bash
+   tofu output -json > terraform-outputs.json
+   cd ..
+   python scripts/generate_profiles.py
+   ```
+   Replace `tofu` with `terraform` if you prefer. The script renders `dbt/profiles.tpl` using the exported JSON and writes `dbt/profiles.yml`. Use `--dry-run` to preview the rendered content or `--outputs-json` to point at a custom file.
+
+6. **Create and place the service account key (if using service account auth):**
    - After apply, note the service account email from the output.
    - Create a key:
      ```bash
      gcloud iam service-accounts keys create .secrets/sa_key.json --iam-account <sa-email>
      ```
-   - The `dbt/profiles.yml` will be configured to use this key.
+   - The generated `dbt/profiles.yml` is already configured to use this key path.
 
 ## Usage
 
@@ -69,6 +68,6 @@ This is a project for M2 BI, featuring infrastructure as code using Terraform/Op
 
 ## Notes
 
-- The infrastructure uses GCS as the backend for Terraform state.
+- The infrastructure uses GCS as the backend for Terraform state. Supply the bucket via `tofu init -backend-config="bucket=..."` (or the Terraform equivalent).
 - Service account keys are not committed to version control (ignored in .gitignore).
 - For production deployments, consider using CI/CD pipelines with secure credential management.

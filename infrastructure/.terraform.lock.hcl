@@ -20,8 +20,7 @@ provider "registry.opentofu.org/hashicorp/google" {
 }
 
 provider "registry.opentofu.org/hashicorp/local" {
-  version     = "2.5.3"
-  constraints = ">= 2.0.0"
+  version = "2.5.3"
   hashes = [
     "h1:mC9+u1eaUILTjxey6Ivyf/3djm//RNNze9kBVX/trng=",
     "zh:32e1d4b0595cea6cda4ca256195c162772ddff25594ab4008731a2ec7be230bf",

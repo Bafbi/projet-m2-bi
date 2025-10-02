@@ -10,7 +10,7 @@ variable "region" {
 }
 
 variable "state_bucket" {
-  description = "GCS bucket for Terraform state"
+  description = "GCS bucket for Terraform state (must exist prior to remote backend init)"
   type        = string
 }
 
