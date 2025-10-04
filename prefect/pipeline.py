@@ -2,8 +2,8 @@
 Flow Prefect pour orchestrer les transformations dbt
 """
 from prefect import flow, task
-from prefect_dbt.cli.commands import DbtCoreOperation
-from prefect_dbt.cli import BigQueryTargetConfigs, DbtCliProfile
+from prefect_dbt.core.tasks import dbt_run, dbt_test
+from prefect_dbt.core import DbtCliProfile, BigQueryTargetConfigs
 from prefect_gcp.credentials import GcpCredentials
 from pathlib import Path
 from dotenv import load_dotenv
@@ -54,13 +54,13 @@ def _build_dbt_cli_profile_from_gcp_block() -> DbtCliProfile:
     credentials = GcpCredentials.load(block_name)
     target_configs = BigQueryTargetConfigs(
         schema=dataset,
-        credentials=credentials,
+        keyfile_json=credentials.service_account_info,
     )
 
     return DbtCliProfile(
         name=profile_name,
         target=target,
-        target_configs=target_configs,
+        target_configs={target: target_configs},
     )
 
 
@@ -78,12 +78,11 @@ def run_dbt_models():
     # Construction du profil dbt depuis le Block GCP
     dbt_cli_profile = _build_dbt_cli_profile_from_gcp_block()
     
-    result = DbtCoreOperation(
-        commands=["dbt run"],
+    result = dbt_run(
         project_dir=str(project_dir),
         dbt_cli_profile=dbt_cli_profile,
         overwrite_profiles=True,
-    ).run()
+    )
     
     return result
 
@@ -101,12 +100,11 @@ def test_dbt_models():
     # Construction du profil dbt depuis le Block GCP
     dbt_cli_profile = _build_dbt_cli_profile_from_gcp_block()
     
-    result = DbtCoreOperation(
-        commands=["dbt test"],
+    result = dbt_test(
         project_dir=str(project_dir),
         dbt_cli_profile=dbt_cli_profile,
         overwrite_profiles=True,
-    ).run()
+    )
     
     return result
 
