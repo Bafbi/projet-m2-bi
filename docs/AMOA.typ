@@ -54,6 +54,25 @@
     #text(16pt, weight: "bold")[Fiche d'expertise - Big Data dans le secteur des Médias]
     #v(1.5em)
     #text(14pt, style: "italic")["Apport du Big Data pour la direction de la programmation d'une chaîne de vidéo à la demande"]
+
+    // START: Added section for group members
+    #v(6em) // Adjust vertical space as needed
+
+    #text(12pt, weight: "bold")[Groupe 1] // <-- Replace with your group number
+
+    #v(2em)
+
+    #text(12pt)[
+      // <-- Replace with your members' names
+      Nathan Eudeline \
+      Cyprien Kelma \
+      Paul Pousset \
+      Deswart Wilfried \
+      Hubert Benjamin \
+      Denis Guillaume \
+      Megard Thibault
+    ]
+    // END: Added section for group members
   ]
 )
 
@@ -181,17 +200,26 @@ Pour répondre à la problématique de BigMedia, nous proposons la démarche sui
 - *4. Proposition d'un POC* #cite(<repo>) :
 == Proposition d'un POC <poc> 
 
-Objectif: démontrer rapidement la valeur d’une chaîne data de bout en bout pour la programmation/production, avec 1–2 indicateurs métier visibles dans un tableau de bord.
-
-- Périmètre: environnement BigQuery « dev », petit échantillon de données, un modèle métier minimal, un dashboard simple.
-- Architecture: Prefect Cloud (orchestration), dbt (transformation et tests), BigQuery (stockage/compute), Terraform/OpenTofu (provisionnement), Power BI (visualisation en DirectQuery).
-- Données: échantillon de logs de visionnage et/ou interactions sociales; modèles d’exemple dbt étendus d’un modèle agrégé « contenu × période ».
-- KPIs (exemples): taux de complétion par contenu/device, popularité (vues/likes) normalisée, DAU/rétention (si données suffisantes).
-- Déroulé: provisionner l’infra → configurer le profil dbt → planifier une exécution quotidienne orchestrée → publier un dashboard lisible par les métiers.
-- Succès: runs quotidiens au vert, tests de base OK, KPIs consultables, retour positif des utilisateurs métier.
-- Budget: faible (principalement temps d’ingénierie).
+Objectif: Que l'on puisse démontrer rapidement la valeur de la chaîne data de bout en bout pour la programmation/production, avec 1–2 indicateurs métier visibles dans un tableau de bord.
 
 
+- Technologies/Outils :
+  Nous choisirons Prefect Cloud (pour l'orchestration global de la pipeline), dbt (pour les modèles de transformations de données et tests), Google storage (comme datalake pour stocker les données structurées ou non, dans des formats diverses: csv/json/parquet), BigQuery (comme base de données de type warehouse pour le stockage/compute), ainsi que Terraform/OpenTofu (pour le provisionnement et la reproductibilité). Enfin, nous utiliserons Power BI pour la visualisation en DirectQuery.
+
+- Le périmètre sera lui composé d'un environnement BigQuery de "dev" et de "production", le tout sur un petit à moyen échantillon de données, avec un modèle métier minimal, et un dashboard simple.
+
+- Données: Nous utiliserons des échantillons de logs de visionnage et/ou interactions sociales; modèles d’exemple dbt étendus d’un modèle agrégé « contenu × période ».
+
+- KPIs (à préciser): taux de complétion par contenu/device, popularité (vues/likes) normalisée, DAU/rétention (si données suffisantes), liens entre catégories de contenus et tranches d'âges.
+
+- Déroulé: La priorité sera de provisionner l’infrastructure minimal du projet. Puis de configurer le profil et les modèles dbt. Ensuite de planifier une exécution orchestrée quotidienne (ou hebdomadaire/mensuel, à préciser également). Et enfin bien sûr de concevoir et publier un dashboard lisible par les équipes métiers qui s'actualise automatiquement.
+
+- Succès: Réussir à avoir des runs quotidiens au vert, tests de données de base validée, des KPIs consultables. Mais une bonne définitions, qualités et gouvernance de la données.
+
+- Enfin, le coût de mise en place sera volontairement optimisé pour supporter le faible budget. Pour autant, les outils et l'architecture global sont choisis volontairement dans le but d'avoir une solution à la fois optimiser en coût et en temps d'implémentation, mais aussi très extensible à l'avenir si jamais le projet est validée et se développe dans le futur. Par exemple l'usage de dbt permet de très facilement ajouter des nouveaux modèles et transformations de données de façon simple et modulaire, le tout en se basant sur les bonnes pratiques d'ingénierie logiciel.
+
+
+#pagebreak()
 
 // = Annexe <annexe>
 
