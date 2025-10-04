@@ -2,7 +2,7 @@
 Flow Prefect pour orchestrer les transformations dbt
 """
 from prefect import flow, task
-from prefect_dbt.cli.commands import DbtCoreOperation
+from prefect_dbt.core import DbtCoreOperation
 from pathlib import Path
 
 
