@@ -52,6 +52,9 @@ tofu.tfstate.backup
 # Secrets
 .secrets/
 
+# Environment variables (generated from Terraform outputs)
+.env
+
 # Virtualenv
 # https://realpython.com/python-virtual-environments-a-primer/#the-virtualenv-project
 .Python
