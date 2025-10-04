@@ -16,7 +16,7 @@ def run_dbt_models():
     Les retries permettent de gérer les erreurs temporaires de connexion.
     """
     project_dir = Path(__file__).parent.parent / "dbt"
-    dbt_cli_profile = DbtCliProfile.load("profile", validate=False).get_profile()
+    dbt_cli_profile = DbtCliProfile.load("profile").get_profile()
     print(f"Using dbt profile: {dbt_cli_profile}")
 
     result = DbtCoreOperation(
