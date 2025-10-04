@@ -4,6 +4,7 @@ Flow Prefect pour orchestrer les transformations dbt
 from prefect import flow, task
 from prefect_dbt.cli.commands import DbtCoreOperation
 from pathlib import Path
+from prefect_dbt.cli import DbtCliProfile
 
 
 @task(name="dbt-run", retries=2, retry_delay_seconds=30)
@@ -15,11 +16,11 @@ def run_dbt_models():
     Les retries permettent de gérer les erreurs temporaires de connexion.
     """
     project_dir = Path(__file__).parent.parent / "dbt"
-    
+
     result = DbtCoreOperation(
         commands=["dbt run"],
         project_dir=str(project_dir),
-        profiles_dir=str(project_dir),
+        dbt_cli_profile=DbtCliProfile.load("profile").get_profile(),
     ).run()
     
     return result
