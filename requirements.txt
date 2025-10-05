@@ -355,7 +355,7 @@ prefect==3.4.20
     #   prefect-shell
 prefect-cloud==0.1.8
     # via projet-m2-bi (pyproject.toml)
-prefect-dbt[bigquery]==0.7.8
+prefect-dbt==0.7.8
     # via
     #   projet-m2-bi (pyproject.toml)
     #   prefect
@@ -363,7 +363,7 @@ prefect-gcp==0.6.10
     # via
     #   projet-m2-bi (pyproject.toml)
     #   prefect-dbt
-prefect-shell==0.3.3
+prefect-shell==0.3.1
     # via prefect-dbt
 prometheus-client==0.23.1
     # via prefect
@@ -558,7 +558,7 @@ traitlets==5.14.3
     # via
     #   jupyter-core
     #   nbformat
-typer==0.19.2
+typer==0.17.4
     # via
     #   prefect
     #   prefect-cloud
