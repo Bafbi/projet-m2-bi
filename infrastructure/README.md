@@ -68,7 +68,9 @@ This document explains how to provision the Google Cloud resources and supportin
      - `gcp-credentials` - GCP service account credentials
      - `bigquery-target-configs-{target}` - BigQuery config per target
      - `dbt-cli-profile-{target}` - dbt CLI profile per target
-     - `dbt-core-operation-{target}` - dbt operation block per target
+     - `dbt-operation-run-{target}` - dbt run operation per target
+     - `dbt-operation-test-{target}` - dbt test operation per target
+     - `dbt-operation-debug-{target}` - dbt debug operation per target
 
 6. **Create and store the service account key (if required)**
    ```bash

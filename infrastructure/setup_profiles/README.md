@@ -23,7 +23,7 @@ Crée automatiquement les blocs Prefect pour tous les targets définis dans le t
 - GCP Credentials
 - BigQuery Target Configs (un par target)
 - DBT CLI Profile (un par target)
-- DBT Core Operation (un par target)
+- DBT Core Operations (trois par target: run, test, debug)
 
 ### 3. Configuration complète
 Combine les deux modes ci-dessus.
@@ -98,7 +98,7 @@ Tâches atomiques Prefect pour chaque opération :
 - `setup_gcp_credentials` : Crée le bloc GCP credentials
 - `setup_bigquery_target` : Crée le bloc BigQuery config
 - `setup_dbt_profile` : Crée le bloc dbt profile
-- `setup_dbt_operation` : Crée le bloc dbt operation
+- `setup_dbt_operation` : Crée un bloc dbt operation (appelé 3x par target)
 
 ### Flows (flows.py)
 Orchestration des tâches en pipelines :
@@ -135,5 +135,6 @@ projet_m2_bi:
 
 Cette structure générera :
 - `dbt-cli-profile-dev` et `dbt-cli-profile-prod`
-- `dbt-core-operation-dev` et `dbt-core-operation-prod`
+- `dbt-operation-run-dev`, `dbt-operation-test-dev`, `dbt-operation-debug-dev`
+- `dbt-operation-run-prod`, `dbt-operation-test-prod`, `dbt-operation-debug-prod`
 - etc.

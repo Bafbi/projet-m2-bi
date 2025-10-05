@@ -362,8 +362,30 @@ def setup_dbt_operation(
     run_logger.info(f"Configuration de l'opération dbt avec les commandes: {dbt_commands}...")
     dbt_cli_profile = dbt_profile or DbtCliProfile.load(dbt_profile_block_name)
     
+    # Convert project_dir to a relative path string
+    # Get the current working directory at runtime
+    from pathlib import Path as P
+    project_dir_abs = P(project_dir).resolve()
+    
+    # Try to make it relative to common base locations
+    try:
+        # Try relative to current working directory
+        cwd = P.cwd()
+        relative_path = project_dir_abs.relative_to(cwd)
+        project_dir_str = str(relative_path)
+    except ValueError:
+        # If not relative to cwd, use a simple relative path from project root
+        # Assuming the script is run from project root, use "dbt" as relative path
+        if project_dir_abs.name == "dbt":
+            project_dir_str = "dbt"
+        else:
+            # Fallback to the directory name
+            project_dir_str = str(project_dir)
+    
+    run_logger.info(f"Using project_dir: {project_dir_str}")
+    
     dbt_core_operation = DbtCoreOperation(
-        project_dir=project_dir,
+        project_dir=project_dir_str,
         commands=dbt_commands,
         dbt_cli_profile=dbt_cli_profile,
         overwrite_profiles=True,

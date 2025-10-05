@@ -176,10 +176,22 @@ def setup_dbt_blocks_pipeline(
         threads = target_config.get("threads", 1)
         location = target_config.get("location", "europe-west9")
         
+        # Remplacer les variables du template dans location (ex: ${region})
+        if isinstance(location, str) and "${" in location:
+            from string import Template
+            location_template = Template(location)
+            # Préparer le contexte avec les outputs Terraform
+            location_context = {
+                "region": outputs.get("region", {}).get("value") if isinstance(outputs.get("region"), dict) else outputs.get("region", "europe-west9")
+            }
+            location = location_template.safe_substitute(location_context)
+        
         # Noms des blocs pour ce target
         target_configs_block_name = f"bigquery-target-configs-{target_name}"
         dbt_profile_block_name = f"dbt-cli-profile-{target_name}"
-        dbt_operation_block_name = f"dbt-core-operation-{target_name}"
+        dbt_operation_run_block_name = f"dbt-operation-run-{target_name}"
+        dbt_operation_test_block_name = f"dbt-operation-test-{target_name}"
+        dbt_operation_debug_block_name = f"dbt-operation-debug-{target_name}"
         
         print(f"     - Dataset: {schema_name}")
         print(f"     - Threads: {threads}")
@@ -202,19 +214,39 @@ def setup_dbt_blocks_pipeline(
             dbt_profile_block_name=dbt_profile_block_name
         )
         
-        # Configure l'opération dbt
-        dbt_operation = setup_dbt_operation(
+        # Configure les opérations dbt (run, test, debug)
+        print(f"     - Création des blocs d'opération...")
+        
+        dbt_operation_run = setup_dbt_operation(
             dbt_profile=dbt_profile,
             dbt_profile_block_name=dbt_profile_block_name,
-            dbt_commands=dbt_commands,
-            dbt_operation_block_name=dbt_operation_block_name,
+            dbt_commands=["dbt run"],
+            dbt_operation_block_name=dbt_operation_run_block_name,
+            project_dir=dbt_project_dir
+        )
+        
+        dbt_operation_test = setup_dbt_operation(
+            dbt_profile=dbt_profile,
+            dbt_profile_block_name=dbt_profile_block_name,
+            dbt_commands=["dbt test"],
+            dbt_operation_block_name=dbt_operation_test_block_name,
+            project_dir=dbt_project_dir
+        )
+        
+        dbt_operation_debug = setup_dbt_operation(
+            dbt_profile=dbt_profile,
+            dbt_profile_block_name=dbt_profile_block_name,
+            dbt_commands=["dbt debug"],
+            dbt_operation_block_name=dbt_operation_debug_block_name,
             project_dir=dbt_project_dir
         )
         
         results["targets"][target_name] = {
             "target_configs": target_configs_block_name,
             "dbt_profile": dbt_profile_block_name,
-            "dbt_operation": dbt_operation_block_name,
+            "dbt_operation_run": dbt_operation_run_block_name,
+            "dbt_operation_test": dbt_operation_test_block_name,
+            "dbt_operation_debug": dbt_operation_debug_block_name,
             "schema": schema_name,
             "threads": threads,
             "location": location
@@ -230,8 +262,11 @@ def setup_dbt_blocks_pipeline(
     for target_name, target_blocks in results["targets"].items():
         marker = " (default)" if target_name == default_target else ""
         print(f"     • {target_name}{marker}:")
-        print(f"       - Operation block: {target_blocks['dbt_operation']}")
         print(f"       - Profile block: {target_blocks['dbt_profile']}")
+        print(f"       - Operation blocks:")
+        print(f"         * run: {target_blocks['dbt_operation_run']}")
+        print(f"         * test: {target_blocks['dbt_operation_test']}")
+        print(f"         * debug: {target_blocks['dbt_operation_debug']}")
         print(f"       - Dataset: {target_blocks['schema']}")
     
     return results
