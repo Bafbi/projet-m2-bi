@@ -38,7 +38,7 @@ def test_dbt_debug_flow():
     # Construire l'opération dbt run
     dbt_operation = DbtCoreOperation(
         project_dir=project_dir,
-        profile=dbt_cli_profile,
+        dbt_cli_profile=dbt_cli_profile,
         commands=["dbt debug"],
         target="dev",
     )
