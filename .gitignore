@@ -289,4 +289,4 @@ __marimo__/
 .direnv/
 
 # local profil.yml
-dbt/profiles.ymldbt/profiles.yml
+dbt/profiles.yml
