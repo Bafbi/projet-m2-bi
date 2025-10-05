@@ -21,8 +21,11 @@ def run_dbt_models(target: str = "dev"):
     Cette tâche construit tous les modèles définis dans le projet dbt.
     Les retries permettent de gérer les erreurs temporaires de connexion.
     
-    IMPORTANT: Cette tâche utilise le profiles.yml local (dbt/profiles.yml).
-    Assurez-vous de le générer avec: uv run python -m infrastructure.setup_profiles --local-only
+    Mode Cloud/Local:
+      - Cloud: tente de charger une opération dbt depuis un bloc Prefect
+               (ex: 'dbt-operation-run-{target}' ou 'dbt-core-operation-{target}').
+      - Local: fallback sur le profiles.yml local (dbt/profiles.yml).
+    Pour générer le profiles.yml local: uv run python -m infrastructure.setup_profiles --local-only
     
     Args:
         target: Environnement cible (dev ou prod). Correspond au target dans profiles.yml
@@ -35,10 +38,30 @@ def run_dbt_models(target: str = "dev"):
     profiles_dir = project_dir
     
     logger.info(f"🚀 Exécution de dbt run sur l'environnement: {target}")
+    logger.info("🔎 Tentative d'exécution via un bloc Prefect (mode Cloud)...")
+
+    # 1) Tentative Cloud: charger une opération dbt depuis Prefect Blocks
+    preferred_block_names = [
+        f"dbt-operation-run-{target}",
+        f"dbt-core-operation-{target}",
+        "dbt-core-operation",
+    ]
+    for block_name in preferred_block_names:
+        try:
+            op = DbtCoreOperation.load(block_name)
+            logger.info(f"☁️  Exécution via le bloc Prefect: {block_name}")
+            result = op.run()
+            logger.info(f"✅ dbt run terminé avec succès via bloc '{block_name}'")
+            return result
+        except Exception:
+            # On essaye le prochain bloc
+            continue
+
+    # 2) Fallback Local: utiliser le profiles.yml local
+    logger.info("💻 Aucun bloc Prefect compatible trouvé. Bascule en mode local (profiles.yml)...")
     logger.info(f"📁 Répertoire du projet: {project_dir}")
     logger.info(f"📋 Fichier de profils: {profiles_dir / 'profiles.yml'}")
-    
-    # Vérifie que profiles.yml existe
+
     if not (profiles_dir / "profiles.yml").exists():
         logger.error("❌ Le fichier profiles.yml n'existe pas!")
         logger.error("Générez-le avec: uv run python -m infrastructure.setup_profiles --local-only")
@@ -47,14 +70,13 @@ def run_dbt_models(target: str = "dev"):
             f"Exécutez: uv run python -m infrastructure.setup_profiles --local-only"
         )
 
-    # Exécute dbt run en utilisant le profiles.yml local
     result = DbtCoreOperation(
         commands=[f"dbt run --target {target}"],
         project_dir=str(project_dir),
         profiles_dir=str(profiles_dir),
         overwrite_profiles=False,
     ).run()
-    
+
     logger.info(f"✅ dbt run terminé avec succès sur {target}")
     return result
 
@@ -67,7 +89,10 @@ def test_dbt_models(target: str = "dev"):
     Vérifie que les contraintes de qualité des données sont respectées
     (unicité, non-nullité, relations, etc.)
     
-    IMPORTANT: Cette tâche utilise le profiles.yml local (dbt/profiles.yml).
+    Mode Cloud/Local:
+      - Cloud: tente de charger une opération dbt depuis un bloc Prefect
+               (ex: 'dbt-operation-test-{target}' ou 'dbt-core-operation-{target}').
+      - Local: fallback sur le profiles.yml local (dbt/profiles.yml).
     
     Args:
         target: Environnement cible (dev ou prod). Correspond au target dans profiles.yml
@@ -80,24 +105,42 @@ def test_dbt_models(target: str = "dev"):
     profiles_dir = project_dir
     
     logger.info(f"🧪 Exécution de dbt test sur l'environnement: {target}")
+    logger.info("🔎 Tentative d'exécution via un bloc Prefect (mode Cloud)...")
+
+    # 1) Tentative Cloud: charger une opération dbt depuis Prefect Blocks
+    preferred_block_names = [
+        f"dbt-operation-test-{target}",
+        f"dbt-core-operation-{target}",
+        "dbt-core-operation",
+    ]
+    for block_name in preferred_block_names:
+        try:
+            op = DbtCoreOperation.load(block_name)
+            logger.info(f"☁️  Exécution via le bloc Prefect: {block_name}")
+            result = op.run()
+            logger.info(f"✅ dbt test terminé avec succès via bloc '{block_name}'")
+            return result
+        except Exception:
+            continue
+
+    # 2) Fallback Local: utiliser le profiles.yml local
+    logger.info("💻 Aucun bloc Prefect compatible trouvé. Bascule en mode local (profiles.yml)...")
     logger.info(f"📁 Répertoire du projet: {project_dir}")
-    
-    # Vérifie que profiles.yml existe
+
     if not (profiles_dir / "profiles.yml").exists():
         logger.error("❌ Le fichier profiles.yml n'existe pas!")
         raise FileNotFoundError(
             f"Le fichier {profiles_dir / 'profiles.yml'} n'existe pas. "
             f"Exécutez: uv run python -m infrastructure.setup_profiles --local-only"
         )
-    
-    # Exécute dbt test en utilisant le profiles.yml local
+
     result = DbtCoreOperation(
         commands=[f"dbt test --target {target}"],
         project_dir=str(project_dir),
         profiles_dir=str(profiles_dir),
         overwrite_profiles=False,
     ).run()
-    
+
     logger.info(f"✅ dbt test terminé avec succès sur {target}")
     return result
 
