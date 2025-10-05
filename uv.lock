@@ -769,6 +769,21 @@ pandas = [
 ]
 
 [[package]]
+name = "google-cloud-bigquery-storage"
+version = "2.33.1"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "google-api-core", extra = ["grpc"] },
+    { name = "google-auth" },
+    { name = "proto-plus" },
+    { name = "protobuf" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/75/5e/85869233deabd369b076486836f5d8389ac95a8ce692dd27cde767f89e2b/google_cloud_bigquery_storage-2.33.1.tar.gz", hash = "sha256:3fd25bef364ac5fb9bbd6560f0dd11b90b1845883df8e0a8c706ad53d00fc23b", size = 292622, upload-time = "2025-09-09T19:26:30.074Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/55/80/f4bb233912ab62b46b30618adbc840a02322a47c4f4f8a1e9f0494dac7db/google_cloud_bigquery_storage-2.33.1-py3-none-any.whl", hash = "sha256:24952aba0d69acc4d6bfbdc7a09dddbb728496b1780bd224f1056361a1b51044", size = 293619, upload-time = "2025-09-09T19:26:25.183Z" },
+]
+
+[[package]]
 name = "google-cloud-core"
 version = "2.4.3"
 source = { registry = "https://pypi.org/simple" }
@@ -1798,6 +1813,11 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/60/0a/1dd1ede29d2163d79a80692967d4f87f35fd7dee61e0fe1d9b74f7f252eb/prefect-3.4.20-py3-none-any.whl", hash = "sha256:2a95c3a1ee8810842c699c27abdf7f27713a7fefa203bc314645086aeba2bfc4", size = 6136697, upload-time = "2025-09-25T21:13:06.633Z" },
 ]
 
+[package.optional-dependencies]
+dbt = [
+    { name = "prefect-dbt" },
+]
+
 [[package]]
 name = "prefect-cloud"
 version = "0.1.8"
@@ -1839,6 +1859,12 @@ wheels = [
     { url = "https://files.pythonhosted.org/packages/86/d3/e834cbd371d30cff70d791943c9c1c877d6e0712d7958cf735960bfd133f/prefect_dbt-0.7.8-py3-none-any.whl", hash = "sha256:de8f86dbbe64342e0d3f5d2cba17ad49b1301985a5886e84e4c279a85275a1a5", size = 55899, upload-time = "2025-09-18T15:50:54.683Z" },
 ]
 
+[package.optional-dependencies]
+bigquery = [
+    { name = "dbt-bigquery" },
+    { name = "prefect-gcp", extra = ["bigquery"] },
+]
+
 [[package]]
 name = "prefect-gcp"
 version = "0.6.10"
@@ -1854,6 +1880,12 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/be/07/23d92656a3d4104901163c70e2fc6761984bcfa90848edf6e2da6223b83b/prefect_gcp-0.6.10.tar.gz", hash = "sha256:43cf4c65302807aa2d4f16a86cb739878cc23b81a1a5f8c487d35e747710de2e", size = 79129, upload-time = "2025-07-31T20:36:18.153Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/9e/9d/c683c099c44982a55e16fb4a09a683bbb7f4456daa61f6b7ba2a1feaba03/prefect_gcp-0.6.10-py3-none-any.whl", hash = "sha256:e845259033a02c04ec18860476a0cee344ab320c95d595f2efadd104b94a29bb", size = 61778, upload-time = "2025-07-31T20:36:16.176Z" },
+]
+
+[package.optional-dependencies]
+bigquery = [
+    { name = "google-cloud-bigquery" },
+    { name = "google-cloud-bigquery-storage" },
 ]
 
 [[package]]
@@ -1875,9 +1907,9 @@ source = { virtual = "." }
 dependencies = [
     { name = "dbt-bigquery" },
     { name = "dbt-core" },
-    { name = "prefect" },
+    { name = "prefect", extra = ["dbt"] },
     { name = "prefect-cloud" },
-    { name = "prefect-dbt" },
+    { name = "prefect-dbt", extra = ["bigquery"] },
     { name = "prefect-gcp" },
     { name = "pyyaml" },
 ]
@@ -1886,9 +1918,9 @@ dependencies = [
 requires-dist = [
     { name = "dbt-bigquery", specifier = ">=1.10.2" },
     { name = "dbt-core", specifier = ">=1.10.13" },
-    { name = "prefect", specifier = ">=3.4.20" },
+    { name = "prefect", extras = ["dbt"], specifier = ">=3.4.20" },
     { name = "prefect-cloud", specifier = ">=0.1.8" },
-    { name = "prefect-dbt", specifier = ">=0.7.8" },
+    { name = "prefect-dbt", extras = ["bigquery"], specifier = ">=0.7.8" },
     { name = "prefect-gcp", specifier = ">=0.6.10" },
     { name = "pyyaml", specifier = ">=6.0.3" },
 ]
