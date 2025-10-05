@@ -30,23 +30,27 @@ Combine les deux modes ci-dessus.
 
 ## Usage
 
-### Mode CLI
+### Command-Line Interface
+
+The module provides a CLI with multiple execution modes:
 
 ```bash
-# Configuration complète (local + Prefect)
+# Complete setup (local profiles + Prefect blocks)
 uv run python -m infrastructure.setup_profiles
 
-# Génération locale uniquement
+# Local profiles only
 uv run python -m infrastructure.setup_profiles --local-only
 
-# Blocs Prefect uniquement
+# Prefect blocks only
 uv run python -m infrastructure.setup_profiles --blocks-only
 
-# Avec projet GCP personnalisé
+# With custom GCP project
 uv run python -m infrastructure.setup_profiles --gcp-project mon-projet-gcp
 ```
 
-### Mode Python
+### Python API
+
+You can also use the module programmatically:
 
 ```python
 from infrastructure.setup_profiles import (
@@ -55,15 +59,32 @@ from infrastructure.setup_profiles import (
     setup_dbt_complete_pipeline,
 )
 
-# Génération locale
+# Generate local profiles only
 generate_local_profiles_pipeline()
 
-# Configuration des blocs Prefect
+# Setup Prefect blocks only
 setup_dbt_blocks_pipeline(gcp_project="mon-projet")
 
-# Configuration complète
+# Complete setup (both local + blocks)
 setup_dbt_complete_pipeline(gcp_project="mon-projet")
 ```
+
+### Execution Modes
+
+**1. Complete Setup** (default)
+- Generates local `dbt/profiles.yml`
+- Creates all Prefect blocks for each target
+- Recommended for initial setup
+
+**2. Local-Only Mode** (`--local-only`)
+- Only generates `dbt/profiles.yml`
+- Useful for local development without Prefect
+- Fast execution
+
+**3. Blocks-Only Mode** (`--blocks-only`)
+- Only creates Prefect blocks
+- Assumes local profiles already exist
+- Useful for updating Prefect configuration
 
 ## Architecture
 
