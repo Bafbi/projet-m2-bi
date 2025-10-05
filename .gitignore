@@ -287,3 +287,6 @@ __marimo__/
 # direnv
 .envrc
 .direnv/
+
+# local profil.yml
+dbt/profiles.yml
