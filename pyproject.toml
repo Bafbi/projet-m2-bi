@@ -11,4 +11,5 @@ dependencies = [
     "prefect-cloud>=0.1.8",
     "prefect-dbt>=0.7.8",
     "prefect-gcp>=0.6.10",
+    "pyyaml>=6.0.3",
 ]

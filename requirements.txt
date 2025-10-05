@@ -1,7 +1,0 @@
-prefect
-prefect-cloud
-prefect-dbt
-dbt-core==1.10.2
-dbt-bigquery==1.10.2
-google-cloud-bigquery
-google-cloud-storage

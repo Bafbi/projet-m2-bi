@@ -1,23 +1,32 @@
-# Flows Prefect : Installation et utilisation t'as capté - Projet M2 BI
+# Flows Prefect : Installation et utilisation - Projet M2 BI
 
+> **Note**: Ce répertoire a été renommé de `prefect/` à `prefect_flows/` pour éviter les conflits avec le package Python `prefect`.
 
-uv pip install -r requirements.txt
+## Installation
+
+```bash
+uv sync
 ```
 
 ```bash
 prefect-cloud login
 ```
 
+## Usage
+
 Pour tester votre flow localement avant de le déployer :
 
 ```bash
 # Exécuter le pipeline complet
-python prefect/pipeline.py
+uv run python prefect_flows/pipeline.py
+```
 
+## Déploiement
 
 ```bash
 # Deploy la pipeline
-prefect-cloud deploy prefect/pipeline.py:dbt_full_pipeline
+prefect-cloud deploy prefect_flows/pipeline.py:dbt_full_pipeline
+```
 
 
 

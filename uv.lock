@@ -1728,6 +1728,7 @@ dependencies = [
     { name = "prefect-cloud" },
     { name = "prefect-dbt" },
     { name = "prefect-gcp" },
+    { name = "pyyaml" },
 ]
 
 [package.metadata]
@@ -1738,6 +1739,7 @@ requires-dist = [
     { name = "prefect-cloud", specifier = ">=0.1.8" },
     { name = "prefect-dbt", specifier = ">=0.7.8" },
     { name = "prefect-gcp", specifier = ">=0.6.10" },
+    { name = "pyyaml", specifier = ">=6.0.3" },
 ]
 
 [[package]]
