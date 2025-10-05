@@ -10,7 +10,7 @@ Pour générer profiles.yml :
 """
 from prefect import flow, task, get_run_logger
 from prefect_dbt.cli.commands import DbtCoreOperation
-from prefect_dbt.cli import DbtCliProfile
+from prefect_dbt.cli import DbtCliProfile, BigQueryTargetConfigs
 from pathlib import Path
 
 
@@ -41,25 +41,33 @@ def run_dbt_models(target: str = "dev"):
     logger.info(f"🚀 Exécution de dbt run sur l'environnement: {target}")
     logger.info("🔎 Tentative d'exécution via un bloc Prefect (mode Cloud)...")
 
-    # 1) Tentative Cloud (profil): charger un profil dbt, construire l'opération dynamiquement
-    preferred_profile_blocks = [
-        f"dbt-cli-profile-{target}",
-        "dbt-cli-profile",
-    ]
-    for profile_block in preferred_profile_blocks:
-        try:
-            profile = DbtCliProfile.load(profile_block)
-            logger.info(f"☁️  Exécution via le profil Prefect: {profile_block}")
-            result = DbtCoreOperation(
-                project_dir=str(project_dir),
-                commands=[f"dbt run --target {target}"],
-                dbt_cli_profile=profile,
-                overwrite_profiles=True,
-            ).run()
-            logger.info(f"✅ dbt run terminé avec succès via profil '{profile_block}'")
-            return result
-        except Exception:
-            continue
+    # 1) Tentative Cloud (profil): charger les blocs et reconstruire le profil
+    try:
+        # Charger les target configs et le profil séparément
+        bigquery_target_configs = BigQueryTargetConfigs.load(f"bigquery-target-configs-{target}")
+        logger.info(f"✅ BigQuery target configs chargé: {bigquery_target_configs}")
+        
+        dbt_cli_profile_block = DbtCliProfile.load(f"dbt-cli-profile-{target}")
+        logger.info(f"✅ Profil dbt chargé: {dbt_cli_profile_block.name}")
+        
+        # Reconstruire le profil avec les target configs à jour
+        profile = DbtCliProfile(
+            name=dbt_cli_profile_block.name,
+            target=dbt_cli_profile_block.target,
+            target_configs=bigquery_target_configs
+        )
+        
+        logger.info(f"☁️  Exécution via le profil Prefect reconstruit pour {target}")
+        result = DbtCoreOperation(
+            project_dir=project_dir,
+            commands=["dbt run"],
+            dbt_cli_profile=profile,
+            overwrite_profiles=True,
+        ).run()
+        logger.info(f"✅ dbt run terminé avec succès via profil '{target}'")
+        return result
+    except Exception as e:
+        logger.warning(f"⚠️  Impossible de charger les blocs Prefect pour {target}: {e}")
 
     # 2) Tentative Cloud (opération): charger une opération dbt depuis Prefect Blocks
     preferred_block_names = [
@@ -128,25 +136,33 @@ def test_dbt_models(target: str = "dev"):
     logger.info(f"🧪 Exécution de dbt test sur l'environnement: {target}")
     logger.info("🔎 Tentative d'exécution via un bloc Prefect (mode Cloud)...")
 
-    # 1) Tentative Cloud (profil): charger un profil dbt, construire l'opération dynamiquement
-    preferred_profile_blocks = [
-        f"dbt-cli-profile-{target}",
-        "dbt-cli-profile",
-    ]
-    for profile_block in preferred_profile_blocks:
-        try:
-            profile = DbtCliProfile.load(profile_block)
-            logger.info(f"☁️  Exécution via le profil Prefect: {profile_block}")
-            result = DbtCoreOperation(
-                project_dir=str(project_dir),
-                commands=[f"dbt test --target {target}"],
-                dbt_cli_profile=profile,
-                overwrite_profiles=True,
-            ).run()
-            logger.info(f"✅ dbt test terminé avec succès via profil '{profile_block}'")
-            return result
-        except Exception:
-            continue
+    # 1) Tentative Cloud (profil): charger les blocs et reconstruire le profil
+    try:
+        # Charger les target configs et le profil séparément
+        bigquery_target_configs = BigQueryTargetConfigs.load(f"bigquery-target-configs-{target}")
+        logger.info(f"✅ BigQuery target configs chargé: {bigquery_target_configs}")
+        
+        dbt_cli_profile_block = DbtCliProfile.load(f"dbt-cli-profile-{target}")
+        logger.info(f"✅ Profil dbt chargé: {dbt_cli_profile_block.name}")
+        
+        # Reconstruire le profil avec les target configs à jour
+        profile = DbtCliProfile(
+            name=dbt_cli_profile_block.name,
+            target=dbt_cli_profile_block.target,
+            target_configs=bigquery_target_configs
+        )
+        
+        logger.info(f"☁️  Exécution via le profil Prefect reconstruit pour {target}")
+        result = DbtCoreOperation(
+            project_dir=project_dir,
+            commands=["dbt test"],
+            dbt_cli_profile=profile,
+            overwrite_profiles=True,
+        ).run()
+        logger.info(f"✅ dbt test terminé avec succès via profil '{target}'")
+        return result
+    except Exception as e:
+        logger.warning(f"⚠️  Impossible de charger les blocs Prefect pour {target}: {e}")
 
     # 2) Tentative Cloud (opération): charger une opération dbt depuis Prefect Blocks
     preferred_block_names = [
