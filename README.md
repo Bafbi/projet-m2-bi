@@ -31,6 +31,8 @@ Detailed prerequisites and step-by-step deployment instructions now live in [`in
 
 	See the [uv running commands guide](https://docs.astral.sh/uv/guides/projects/#running-commands) for more patterns.
 
+	Lock requirements with [`uv pip compile pyproject.toml -o requirements.txt`](https://docs.astral.sh/uv/pip/compile/#locking-requirements).
+
 ## Notes
 
 - Service account keys are not committed to version control (ignored in `.gitignore`).
