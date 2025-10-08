@@ -27,6 +27,7 @@ def run_dbt_models(target: str = "dev"):
                (ex: 'dbt-operation-run-{target}' ou 'dbt-core-operation-{target}').
       - Local: fallback sur le profiles.yml local (dbt/profiles.yml).
     Pour générer le profiles.yml local: uv run python -m infrastructure.setup_profiles --local-only
+    Pour générer les blocs Prefect (cloud): uv run python -m infrastructure.setup_profiles --blocks-only
     
     Args:
         target: Environnement cible (dev ou prod). Correspond au target dans profiles.yml
